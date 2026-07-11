@@ -112,20 +112,29 @@ const testimonials = [
   const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const behavior: ScrollBehavior = prefersReduced ? 'auto' : 'smooth';
 
-  // Find the index of the card closest to the current scroll position
-  function getActiveIdx(): number {
-    const { scrollLeft } = track;
-    let closest = 0;
-    let minDiff = Infinity;
-    cards.forEach((card, i) => {
-      const diff = Math.abs(card.offsetLeft - scrollLeft);
-      if (diff < minDiff) { minDiff = diff; closest = i; }
-    });
-    return closest;
+  // step = one card width + the gap between cards, both measured live so
+  // it stays correct after resize (cards use % widths via calc())
+  function getStep(): number {
+    const gap = parseFloat(getComputedStyle(track).columnGap) || 0;
+    return cards[0].offsetWidth + gap;
   }
 
+  // True when the last card is fully in view (1px tolerance for sub-pixel rounding)
+  function isAtEnd(): boolean {
+    return track.scrollLeft + track.clientWidth >= track.scrollWidth - 1;
+  }
+
+  // Map current scroll position to the nearest card index, clamped to [0, count-1]
+  function getActiveIdx(): number {
+    const step = getStep();
+    if (!step) return 0;
+    return Math.max(0, Math.min(count - 1, Math.round(track.scrollLeft / step)));
+  }
+
+  // Scroll to a specific card using step-based positioning (not offsetLeft,
+  // which is document-relative and would overshoot the track's maxScrollLeft)
   function scrollToCard(idx: number) {
-    track.scrollTo({ left: cards[idx].offsetLeft, behavior });
+    track.scrollTo({ left: idx * getStep(), behavior });
   }
 
   // Update dot active state
@@ -145,17 +154,25 @@ const testimonials = [
     rafId = requestAnimationFrame(() => { updateDots(); rafId = null; });
   }, { passive: true });
 
-  // Arrow buttons
+  // Arrow buttons — use scrollBy so the browser handles sub-pixel snap alignment;
+  // detect end/start with isAtEnd() / scrollLeft check rather than an index counter
   prevBtn.addEventListener('click', () => {
     stopAutoplay();
-    const idx = getActiveIdx();
-    scrollToCard(idx > 0 ? idx - 1 : count - 1);
+    if (track.scrollLeft <= 1) {
+      // At start: loop to the last page (browser clamps to maxScrollLeft)
+      track.scrollTo({ left: track.scrollWidth, behavior });
+    } else {
+      track.scrollBy({ left: -getStep(), behavior });
+    }
   });
 
   nextBtn.addEventListener('click', () => {
     stopAutoplay();
-    const idx = getActiveIdx();
-    scrollToCard(idx < count - 1 ? idx + 1 : 0);
+    if (isAtEnd()) {
+      scrollToCard(0);
+    } else {
+      track.scrollBy({ left: getStep(), behavior });
+    }
   });
 
   // Dot buttons
@@ -173,8 +190,12 @@ const testimonials = [
   function startAutoplay() {
     if (prefersReduced || stopped || timer) return;
     timer = setInterval(() => {
-      const idx = getActiveIdx();
-      scrollToCard(idx < count - 1 ? idx + 1 : 0);
+      // Loop back to the start only once the last card is fully visible
+      if (isAtEnd()) {
+        scrollToCard(0);
+      } else {
+        track.scrollBy({ left: getStep(), behavior });
+      }
     }, 5000);
   }
 
