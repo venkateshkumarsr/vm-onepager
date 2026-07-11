@@ -1,0 +1,156 @@
+---
+const stats = [
+  { number: '558+', label: 'Projects Delivered' },
+  { number: '16+',  label: 'Years of Experience' },
+];
+---
+
+<section class="hero" aria-label="Hero">
+  <div class="container">
+    <div class="content">
+      <h1 class="headline">
+        We Build Fast, SEO-Friendly Websites to Help Your Business Grow
+      </h1>
+
+      <p class="subtext">
+        And once you're live, everything stays in one place — track progress,
+        files, and care plans inside your <strong>Client Portal Hub</strong>.
+      </p>
+
+      <div class="stats" aria-label="Agency stats">
+        {stats.map(({ number, label }) => (
+          <div class="stat">
+            <span class="stat-number">{number}</span>
+            <span class="stat-label">{label}</span>
+          </div>
+        ))}
+      </div>
+
+      <div class="ctas">
+        <a
+          href="https://virtualmind.services/free-website-audit/"
+          class="btn btn-primary"
+        >Get a Free Website Audit</a>
+
+        <a
+          href="https://virtualmind.services/book-a-free-consultation/"
+          class="btn btn-outline"
+        >Book a Free Consultation</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero {
+    padding-block: var(--space-3xl);
+    background-color: var(--color-bg);
+  }
+
+  .container {
+    max-width: var(--container-max);
+    margin-inline: auto;
+    padding-inline: var(--space-lg);
+  }
+
+  .content {
+    max-width: 780px;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xl);
+  }
+
+  .headline {
+    font-size: var(--fs-h1);
+    font-weight: 800;
+    line-height: 1.15;
+    color: var(--color-text);
+    letter-spacing: -0.02em;
+  }
+
+  .subtext {
+    font-size: var(--fs-lead);
+    color: var(--color-muted);
+    line-height: 1.7;
+  }
+
+  /* Stats */
+  .stats {
+    display: flex;
+    gap: var(--space-2xl);
+  }
+
+  .stat {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+  }
+
+  .stat-number {
+    font-size: var(--fs-h2);
+    font-weight: 800;
+    color: var(--color-primary);
+    line-height: 1;
+  }
+
+  .stat-label {
+    font-size: var(--fs-body);
+    color: var(--color-muted);
+    font-weight: 500;
+  }
+
+  /* CTA buttons */
+  .ctas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-md);
+    align-items: center;
+  }
+
+  .btn {
+    display: inline-block;
+    padding: var(--space-md) var(--space-xl);
+    font-size: var(--fs-body);
+    font-weight: 600;
+    text-decoration: none;
+    border-radius: var(--radius);
+    transition: opacity 0.15s, background-color 0.15s;
+    white-space: nowrap;
+  }
+
+  .btn-primary {
+    background-color: var(--color-primary);
+    color: #fff;
+  }
+
+  .btn-primary:hover {
+    opacity: 0.88;
+  }
+
+  .btn-outline {
+    background-color: transparent;
+    color: var(--color-primary);
+    border: 2px solid var(--color-primary);
+  }
+
+  .btn-outline:hover {
+    background-color: var(--color-primary);
+    color: #fff;
+  }
+
+  /* Mobile */
+  @media (max-width: 768px) {
+    .stats {
+      gap: var(--space-xl);
+    }
+
+    .ctas {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .btn {
+      text-align: center;
+    }
+  }
+</style>

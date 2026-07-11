@@ -1,0 +1,206 @@
+---
+const testimonials = [
+  {
+    quote:
+      'Venkat has been working with us for quite a while on multiple site development projects. He is exceptionally good to work with as the work is done well and the communication is excellent. Would highly recommend!',
+    name: 'Chad LaVallie',
+    country: 'USA',
+  },
+  {
+    quote:
+      'Pavithra did an amazing job building a website for my client. She has an eye for detail and communication was clear. Would highly recommend her to anyone.',
+    name: 'Mark Spence',
+    country: 'Spain',
+  },
+  {
+    quote:
+      'Exceptionally professional, competent, and prompt. Extremely happy with the work done. If I could give more than 5 stars, I would unhesitatingly give it.',
+    name: 'Srini Kumar',
+    country: 'USA',
+  },
+  {
+    quote:
+      'Pavithra is a fantastic professional to work with. She is highly skilled in her work. Her communication is clear, and her attention to detail is thorough. I have recommended her to others.',
+    name: 'Lorie Poston',
+    country: 'USA',
+  },
+  {
+    quote:
+      'A pleasure to work with. Very quick to respond, performed excellent work, completed project quickly, and all around a great experience. Would love to work with again!',
+    name: 'Dan Westbrok',
+    country: 'USA',
+  },
+  {
+    quote:
+      'This is one of the best freelancers I worked with and will do again going forward!',
+    name: 'Robert Hollis',
+    country: 'USA',
+  },
+];
+---
+
+<section class="testimonials" id="testimonials" aria-labelledby="testimonials-heading">
+  <div class="container">
+    <div class="section-header">
+      <span class="eyebrow">What Our Clients Say</span>
+      <h2 id="testimonials-heading">
+        Trusted by Clients Worldwide for Reliable Website Development
+      </h2>
+      <div class="rating" aria-label="5 out of 5 stars, based on 318 reviews on Upwork">
+        <span class="stars" aria-hidden="true">★★★★★</span>
+        <span class="rating-text">5/5 — Based on 318 reviews on Upwork</span>
+      </div>
+    </div>
+
+    <div class="grid">
+      {testimonials.map(({ quote, name, country }) => (
+        <article class="card">
+          <span class="deco-quote" aria-hidden="true">"</span>
+          <blockquote class="quote">
+            <p>{quote}</p>
+          </blockquote>
+          <footer class="card-footer">
+            <span class="client-name">{name}</span>
+            <span class="client-country">{country}</span>
+          </footer>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .testimonials {
+    padding-block: var(--space-3xl);
+    background-color: var(--color-bg);
+  }
+
+  .container {
+    max-width: var(--container-max);
+    margin-inline: auto;
+    padding-inline: var(--space-lg);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2xl);
+  }
+
+  .section-header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+  }
+
+  .eyebrow {
+    font-size: var(--fs-body);
+    font-weight: 600;
+    color: var(--color-primary);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  h2 {
+    font-size: var(--fs-h2);
+    font-weight: 800;
+    line-height: 1.2;
+    color: var(--color-text);
+    max-width: 680px;
+  }
+
+  /* Rating row */
+  .rating {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    margin-top: var(--space-xs);
+  }
+
+  .stars {
+    color: var(--color-accent);
+    font-size: var(--fs-h4);
+    line-height: 1;
+    letter-spacing: 2px;
+  }
+
+  .rating-text {
+    font-size: var(--fs-body);
+    color: var(--color-muted);
+    font-weight: 500;
+  }
+
+  /* Grid — 3 columns desktop */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-lg);
+  }
+
+  /* Card */
+  .card {
+    background-color: var(--color-card-bg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-card);
+    padding: var(--space-xl);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Decorative large quote mark */
+  .deco-quote {
+    position: absolute;
+    top: var(--space-md);
+    right: var(--space-lg);
+    font-size: 5rem;
+    line-height: 1;
+    color: var(--color-border);
+    font-family: Georgia, serif;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  .quote {
+    flex: 1;
+  }
+
+  .quote p {
+    font-size: var(--fs-body);
+    color: var(--color-text);
+    line-height: 1.7;
+  }
+
+  .card-footer {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+    padding-top: var(--space-md);
+    border-top: 1px solid var(--color-border);
+  }
+
+  .client-name {
+    font-size: var(--fs-body);
+    font-weight: 700;
+    color: var(--color-text);
+  }
+
+  .client-country {
+    font-size: var(--fs-body);
+    color: var(--color-muted);
+  }
+
+  /* Tablet: 2 columns */
+  @media (max-width: 1024px) {
+    .grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  /* Mobile: 1 column */
+  @media (max-width: 600px) {
+    .grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

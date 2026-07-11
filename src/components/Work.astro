@@ -1,0 +1,199 @@
+---
+const projects = [
+  {
+    title: 'Figma to WordPress — AI Platform for Supply Chain',
+    description:
+      'ProfitOps — US-based AI analyst platform built from a Figma design to a full WordPress site using Elementor Pro.',
+    tags: ['Figma to WordPress', 'Elementor Pro', 'USA', 'AI / SaaS'],
+    link: 'https://profitops.ai/',
+  },
+  {
+    title: 'Design Reference to WordPress — AI Supply Chain Insights',
+    description:
+      'HyperKurve — converted a design reference into a polished WordPress site with Elementor Pro.',
+    tags: ['Design to WordPress', 'Elementor Pro', 'USA'],
+    link: 'https://hyperkurve.com/',
+  },
+  {
+    title: 'WordPress Recovery & Homepage Redesign — Relocation Company',
+    description:
+      'AbroadRelo — malware cleanup and a full homepage redesign for a Singapore-based moving company.',
+    tags: ['Recovery', 'Malware Removal', 'Singapore'],
+    link: 'https://abroadrelo.com/',
+  },
+  {
+    title: 'WordPress Websites Built & Maintained — NYC Real Estate',
+    description:
+      'Portfolio of NYC property websites — built and maintained long-term across multiple listings.',
+    tags: ['Real Estate', 'USA / NYC', 'Maintenance'],
+    link: null,
+  },
+];
+---
+
+<section class="work" id="work" aria-labelledby="work-heading">
+  <div class="container">
+    <div class="section-header">
+      <span class="eyebrow">Our Work</span>
+      <h2 id="work-heading">Work That Speaks for Itself</h2>
+    </div>
+
+    <div class="grid">
+      {projects.map(({ title, description, tags, link }) => (
+        <article class="card">
+          <div class="card-image" aria-hidden="true"></div>
+          <div class="card-body">
+            <h3 class="card-title">{title}</h3>
+            <p class="card-desc">{description}</p>
+            <ul class="tags" role="list" aria-label="Project tags">
+              {tags.map(tag => <li class="tag">{tag}</li>)}
+            </ul>
+            {link && (
+              <a
+                href={link}
+                class="card-link"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                View Live Site →
+              </a>
+            )}
+          </div>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .work {
+    padding-block: var(--space-3xl);
+    background-color: var(--color-card-bg);
+  }
+
+  .container {
+    max-width: var(--container-max);
+    margin-inline: auto;
+    padding-inline: var(--space-lg);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2xl);
+  }
+
+  /* Section header */
+  .section-header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+  }
+
+  .eyebrow {
+    font-size: var(--fs-body);
+    font-weight: 600;
+    color: var(--color-primary);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  h2 {
+    font-size: var(--fs-h2);
+    font-weight: 800;
+    line-height: 1.2;
+    color: var(--color-text);
+  }
+
+  /* Grid */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-lg);
+  }
+
+  /* Card */
+  .card {
+    background-color: var(--color-card-bg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-card);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  }
+
+  /* Placeholder image area */
+  .card-image {
+    aspect-ratio: 3 / 2;
+    background-color: var(--color-border);
+    width: 100%;
+    flex-shrink: 0;
+  }
+
+  .card-body {
+    padding: var(--space-lg);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+    flex: 1;
+  }
+
+  .card-title {
+    font-size: var(--fs-h4);
+    font-weight: 700;
+    color: var(--color-text);
+    line-height: 1.3;
+  }
+
+  .card-desc {
+    font-size: var(--fs-body);
+    color: var(--color-muted);
+    line-height: 1.65;
+  }
+
+  /* Tags */
+  .tags {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-xs);
+    margin-top: auto;
+  }
+
+  .tag {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--color-primary);
+    background-color: color-mix(in srgb, var(--color-primary) 10%, transparent);
+    border-radius: calc(var(--radius) / 2);
+    padding: var(--space-xs) var(--space-sm);
+    white-space: nowrap;
+  }
+
+  /* Live site link */
+  .card-link {
+    font-size: var(--fs-body);
+    font-weight: 600;
+    color: var(--color-primary);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+    transition: opacity 0.15s;
+  }
+
+  .card-link:hover {
+    opacity: 0.75;
+  }
+
+  /* Mobile */
+  @media (max-width: 768px) {
+    .grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
