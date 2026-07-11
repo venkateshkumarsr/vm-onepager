@@ -52,9 +52,10 @@ const testimonials = [
       </div>
     </div>
 
-    <div class="grid">
-      {testimonials.map(({ quote, name, country }) => (
-        <article class="card">
+    <!-- Scroll-snap track -->
+    <div class="carousel-track" aria-label="Testimonials carousel">
+      {testimonials.map(({ quote, name, country }, i) => (
+        <article class="card" aria-label={`Testimonial ${i + 1} of ${testimonials.length}`}>
           <span class="deco-quote" aria-hidden="true">"</span>
           <blockquote class="quote">
             <p>{quote}</p>
@@ -66,8 +67,139 @@ const testimonials = [
         </article>
       ))}
     </div>
+
+    <!-- Controls: prev · dots · next -->
+    <div class="carousel-controls">
+      <button class="carousel-prev" aria-label="Previous testimonials">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+          <path d="M12.5 15L7.5 10L12.5 5" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+
+      <div class="dots" role="group" aria-label="Testimonial navigation">
+        {testimonials.map((_, i) => (
+          <button
+            class={`dot${i === 0 ? ' active' : ''}`}
+            aria-label={`Go to testimonial ${i + 1}`}
+            aria-pressed={i === 0 ? 'true' : 'false'}
+          />
+        ))}
+      </div>
+
+      <button class="carousel-next" aria-label="Next testimonials">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+          <path d="M7.5 5L12.5 10L7.5 15" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+    </div>
   </div>
 </section>
+
+<script>
+(function () {
+  const section = document.querySelector('.testimonials') as HTMLElement;
+  if (!section) return;
+
+  const track    = section.querySelector('.carousel-track') as HTMLElement;
+  const cards    = Array.from(track.querySelectorAll('.card')) as HTMLElement[];
+  const dots     = Array.from(section.querySelectorAll('.dot')) as HTMLButtonElement[];
+  const prevBtn  = section.querySelector('.carousel-prev') as HTMLButtonElement;
+  const nextBtn  = section.querySelector('.carousel-next') as HTMLButtonElement;
+  const count    = cards.length;
+
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const behavior: ScrollBehavior = prefersReduced ? 'auto' : 'smooth';
+
+  // Find the index of the card closest to the current scroll position
+  function getActiveIdx(): number {
+    const { scrollLeft } = track;
+    let closest = 0;
+    let minDiff = Infinity;
+    cards.forEach((card, i) => {
+      const diff = Math.abs(card.offsetLeft - scrollLeft);
+      if (diff < minDiff) { minDiff = diff; closest = i; }
+    });
+    return closest;
+  }
+
+  function scrollToCard(idx: number) {
+    track.scrollTo({ left: cards[idx].offsetLeft, behavior });
+  }
+
+  // Update dot active state
+  function updateDots() {
+    const idx = getActiveIdx();
+    dots.forEach((dot, i) => {
+      const active = i === idx;
+      dot.classList.toggle('active', active);
+      dot.setAttribute('aria-pressed', String(active));
+    });
+  }
+
+  // Throttle dot updates to one rAF per scroll event burst
+  let rafId: number | null = null;
+  track.addEventListener('scroll', () => {
+    if (rafId) return;
+    rafId = requestAnimationFrame(() => { updateDots(); rafId = null; });
+  }, { passive: true });
+
+  // Arrow buttons
+  prevBtn.addEventListener('click', () => {
+    stopAutoplay();
+    const idx = getActiveIdx();
+    scrollToCard(idx > 0 ? idx - 1 : count - 1);
+  });
+
+  nextBtn.addEventListener('click', () => {
+    stopAutoplay();
+    const idx = getActiveIdx();
+    scrollToCard(idx < count - 1 ? idx + 1 : 0);
+  });
+
+  // Dot buttons
+  dots.forEach((dot, i) => {
+    dot.addEventListener('click', () => { stopAutoplay(); scrollToCard(i); });
+  });
+
+  // Stop autoplay on any direct pointer interaction with the track (touch/drag)
+  track.addEventListener('pointerdown', stopAutoplay, { passive: true });
+
+  // Autoplay — disabled entirely when prefers-reduced-motion is set
+  let timer: ReturnType<typeof setInterval> | null = null;
+  let stopped = false;
+
+  function startAutoplay() {
+    if (prefersReduced || stopped || timer) return;
+    timer = setInterval(() => {
+      const idx = getActiveIdx();
+      scrollToCard(idx < count - 1 ? idx + 1 : 0);
+    }, 5000);
+  }
+
+  function pauseAutoplay() {
+    if (!timer) return;
+    clearInterval(timer);
+    timer = null;
+  }
+
+  function stopAutoplay() {
+    if (stopped) return;
+    stopped = true;
+    pauseAutoplay();
+  }
+
+  // Pause on hover / focus; resume on leave / blur (unless permanently stopped)
+  section.addEventListener('mouseenter', pauseAutoplay);
+  section.addEventListener('mouseleave', () => { if (!stopped) startAutoplay(); });
+  section.addEventListener('focusin',    pauseAutoplay);
+  section.addEventListener('focusout',   () => { if (!stopped) startAutoplay(); });
+
+  updateDots();
+  startAutoplay();
+})();
+</script>
 
 <style>
   .testimonials {
@@ -106,7 +238,6 @@ const testimonials = [
     max-width: 680px;
   }
 
-  /* Rating row */
   .rating {
     display: flex;
     align-items: center;
@@ -127,15 +258,28 @@ const testimonials = [
     font-weight: 500;
   }
 
-  /* Grid — 3 columns desktop */
-  .grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
+  /* ── Carousel track ── */
+  .carousel-track {
+    display: flex;
     gap: var(--space-lg);
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-padding-left: 0;
+    /* hide scrollbar across browsers */
+    scrollbar-width: none;
+    -ms-overflow-style: none;
   }
 
-  /* Card */
+  .carousel-track::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* ── Cards ── */
   .card {
+    /* desktop: 3 visible */
+    flex-shrink: 0;
+    width: calc((100% - 2 * var(--space-lg)) / 3);
+    scroll-snap-align: start;
     background-color: var(--color-card-bg);
     border: 1px solid var(--color-border);
     border-radius: var(--radius);
@@ -148,7 +292,6 @@ const testimonials = [
     overflow: hidden;
   }
 
-  /* Decorative large quote mark */
   .deco-quote {
     position: absolute;
     top: var(--space-md);
@@ -190,17 +333,73 @@ const testimonials = [
     color: var(--color-muted);
   }
 
-  /* Tablet: 2 columns */
+  /* ── Controls ── */
+  .carousel-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-lg);
+  }
+
+  .carousel-prev,
+  .carousel-next {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border: 1px solid var(--color-border);
+    border-radius: 50%;
+    background-color: var(--color-card-bg);
+    color: var(--color-text);
+    cursor: pointer;
+    transition: background-color 0.15s, color 0.15s, border-color 0.15s;
+    flex-shrink: 0;
+  }
+
+  .carousel-prev:hover,
+  .carousel-next:hover {
+    background-color: var(--color-primary);
+    border-color: var(--color-primary);
+    color: #fff;
+  }
+
+  /* Dots */
+  .dots {
+    display: flex;
+    gap: var(--space-sm);
+    align-items: center;
+  }
+
+  .dot {
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    border: none;
+    background-color: var(--color-border);
+    cursor: pointer;
+    padding: 0;
+    transition: background-color 0.2s, transform 0.2s;
+  }
+
+  .dot.active {
+    background-color: var(--color-primary);
+    transform: scale(1.4);
+  }
+
+  /* ── Responsive card widths ── */
+
+  /* tablet: 2 cards */
   @media (max-width: 1024px) {
-    .grid {
-      grid-template-columns: repeat(2, 1fr);
+    .card {
+      width: calc((100% - 1 * var(--space-lg)) / 2);
     }
   }
 
-  /* Mobile: 1 column */
+  /* mobile: 1 card full-width */
   @media (max-width: 600px) {
-    .grid {
-      grid-template-columns: 1fr;
+    .card {
+      width: 100%;
     }
   }
 </style>
