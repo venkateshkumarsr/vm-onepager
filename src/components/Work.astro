@@ -1,4 +1,10 @@
 ---
+import { Image } from 'astro:assets';
+import profitops from '../assets/work/profitops.webp';
+import hyperkurve from '../assets/work/hyperkurve.webp';
+import abroadRelocation from '../assets/work/abroad-relocation.webp';
+import stellarManhattan from '../assets/work/thestellarmanhattan-1.webp';
+
 const projects = [
   {
     title: 'Figma to WordPress — AI Platform for Supply Chain',
@@ -6,6 +12,8 @@ const projects = [
       'ProfitOps — US-based AI analyst platform built from a Figma design to a full WordPress site using Elementor Pro.',
     tags: ['Figma to WordPress', 'Elementor Pro', 'USA', 'AI / SaaS'],
     link: 'https://profitops.ai/',
+    image: profitops,
+    alt: 'ProfitOps homepage — Figma to WordPress build by VirtualMind',
   },
   {
     title: 'Design Reference to WordPress — AI Supply Chain Insights',
@@ -13,6 +21,8 @@ const projects = [
       'HyperKurve — converted a design reference into a polished WordPress site with Elementor Pro.',
     tags: ['Design to WordPress', 'Elementor Pro', 'USA'],
     link: 'https://hyperkurve.com/',
+    image: hyperkurve,
+    alt: 'HyperKurve homepage — design reference to WordPress by VirtualMind',
   },
   {
     title: 'WordPress Recovery & Homepage Redesign — Relocation Company',
@@ -20,6 +30,8 @@ const projects = [
       'AbroadRelo — malware cleanup and a full homepage redesign for a Singapore-based moving company.',
     tags: ['Recovery', 'Malware Removal', 'Singapore'],
     link: 'https://abroadrelo.com/',
+    image: abroadRelocation,
+    alt: 'AbroadRelo homepage — WordPress recovery and redesign by VirtualMind',
   },
   {
     title: 'WordPress Websites Built & Maintained — NYC Real Estate',
@@ -27,6 +39,8 @@ const projects = [
       'Portfolio of NYC property websites — built and maintained long-term across multiple listings.',
     tags: ['Real Estate', 'USA / NYC', 'Maintenance'],
     link: null,
+    image: stellarManhattan,
+    alt: 'The Stellar Manhattan — NYC real estate WordPress site maintained by VirtualMind',
   },
 ];
 ---
@@ -39,9 +53,16 @@ const projects = [
     </div>
 
     <div class="grid">
-      {projects.map(({ title, description, tags, link }) => (
+      {projects.map(({ title, description, tags, link, image, alt }) => (
         <article class="card">
-          <div class="card-image" aria-hidden="true"></div>
+          <div class="card-image">
+            <Image
+              src={image}
+              alt={alt}
+              width={800}
+              format="webp"
+            />
+          </div>
           <div class="card-body">
             <h3 class="card-title">{title}</h3>
             <p class="card-desc">{description}</p>
@@ -126,12 +147,20 @@ const projects = [
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
   }
 
-  /* Placeholder image area */
+  /* Image wrapper — maintains 3:2 ratio, clips the img */
   .card-image {
     aspect-ratio: 3 / 2;
-    background-color: var(--color-border);
     width: 100%;
+    overflow: hidden;
     flex-shrink: 0;
+    background-color: var(--color-border);
+  }
+
+  .card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
   }
 
   .card-body {
